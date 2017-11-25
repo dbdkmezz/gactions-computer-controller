@@ -14,7 +14,7 @@ def listen():
         if msg[0] == 'video':
             print(msg[0])
             print(msg[1])
-            # subprocess.Popen(['vlc', msg[1], '--fullscreen'])
+            subprocess.Popen(['vlc', msg[1], '--fullscreen'])
         if msg[0] == 'website':
             print(msg[0])
             print(msg[1])

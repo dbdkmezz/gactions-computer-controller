@@ -1,3 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import VideoFolder, Video
+
+
+admin.site.register(Video)
+admin.site.register(VideoFolder)

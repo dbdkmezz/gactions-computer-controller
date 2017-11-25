@@ -3,6 +3,8 @@ import pprint
 import logging
 
 from django.http import HttpResponse, JsonResponse
+
+from .models import VideoFolder
 from .messenger import Messenger
 
 
@@ -22,13 +24,13 @@ def index(request):
         return googleResponse("What would you like to play?", final=False)
     else:
         query = input['arguments'][0]['textValue'].lower()
+        video = VideoFolder.get_next_video_matching_query(query)
+        if video:
+            video.play()
+            return googleResponse("OK! Playing {}".format(video.name))
         if 'blue' in query:
             Messenger.open_website('https://www.bbc.co.uk/iplayer/episodes/p04tjbtx')
             return googleResponse("OK! Opening Blue Planet, on iPlayer.")
-        if 'rick' in query or 'morty' in query:
-            Messenger.open_video('/media/paul/e9dfc73a-25f7-4831-80da-1f5319e4893d/paul/Downloads/rm01.mkv')
-            return googleResponse("Great! Playing Rick and Morty")
-
         logger.debug("Not sure what to do with the query '%s', asking again.", query)
         return googleResponse("Sorry. I don't know how to {}. What would you like to play?".format(query), final=False)
 
