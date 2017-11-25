@@ -110,3 +110,4 @@ static
 # google actions
 google/creds.data
 google/gactions
+google/action.json
