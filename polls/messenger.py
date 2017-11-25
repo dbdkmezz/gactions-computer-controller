@@ -1,4 +1,8 @@
+import logging
 from multiprocessing.connection import Client
+
+
+logger = logging.getLogger('django')
 
 
 class Messenger(object):
@@ -12,10 +16,12 @@ class Messenger(object):
 
     @classmethod
     def open_video(cls, path):
+        logger.debug("Sending video request, path: %s", path)
         cls._get_connection().send(['video', path])
 
     @classmethod
     def open_website(cls, url):
+        logger.debug("Sending website request, url: %s", url)
         cls._get_connection().send(['website', url])
 
     @classmethod
