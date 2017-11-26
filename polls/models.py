@@ -5,6 +5,7 @@ import datetime
 from django.db import models
 
 from .messenger import Messenger
+from .exceptions import AliasesContainSpaces, FolderContainsNoVideos, InvalidPath
 
 
 logger = logging.getLogger('django')
@@ -18,17 +19,19 @@ class VideoFolder(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk:  # video folder is not being created for the first time
-            super(VideoFolder, self).save(args, kwargs)
+            super(VideoFolder, self).save(*args, **kwargs)
             return
 
+        print(self.aliases)
         if ' ' in self.aliases:
-            logger.debug("PAUL aliases contains spaces, so not adding")
-            return
+            raise AliasesContainSpaces()
+
         videos = list(self.paths_of_videos_in_folder())
         if not videos:
-            logger.debug("PAUL %s contains no videos, so not adding")
-            return
-        super(VideoFolder, self).save(args, kwargs)
+            raise FolderContainsNoVideos
+
+        # need to save it now so it has an id, then we can add the videos
+        super(VideoFolder, self).save(*args, **kwargs)
         for v in videos:
             Video.objects.create(folder=self, file_name=v)
 
@@ -38,24 +41,20 @@ class VideoFolder(models.Model):
             self.priority,
             self.aliases,
             self.path,
-            Video.objects.filter(folder=self.id).count(),
+            Video.objects.filter(folder__id=self.id).count(),
         )
 
     @staticmethod
     def get_next_video_matching_query(query):
         for folder in VideoFolder.objects.all().order_by('priority'):
             for name in folder.aliases.split(','):
-                logger.debug("PAUL %s:%s", name, query)
                 if name.lower() in query.lower():
-                    logger.debug("PAUL found it")
-                    video = Video.objects.filter(folder=folder.id, last_played=None).order_by('file_name').first()
-                    logger.debug("PAUL %s", video)
+                    video = Video.objects.filter(folder__id=folder.id, last_played=None).order_by('file_name').first()
                     return video
 
     def paths_of_videos_in_folder(self):
         if not os.path.isdir(self.path):
-            logger.debug("PAUL Unable to add video folder '%s', it's not a directory", self.path)
-            return
+            raise InvalidPath
         for f in os.listdir(self.path):
             if Video.is_video_file(f):
                 yield f
@@ -79,7 +78,8 @@ class Video(models.Model):
 
     @staticmethod
     def is_video_file(filename):
-        return filename.endswith('mkv') or filename.endswith('mp4')
+        ENDINGS = ['mp4', 'mkv', 'avi']
+        return any(filename.lower().endswith(".{}".format(e)) for e in ENDINGS)
 
     def play(self):
         self.last_played = datetime.datetime.now()
