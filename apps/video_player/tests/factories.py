@@ -3,7 +3,7 @@ import string
 
 import factory
 
-from polls.models import Video, VideoFolder
+from apps.video_player.models import Video, VideoFolder
 
 
 def random_string(length=10, characters=string.ascii_letters):

@@ -16,7 +16,7 @@ def index(request):
         input = json.loads(request.body.decode('utf-8'))['inputs'][0]
     except json.JSONDecodeError:
         logger.warn("Unable to decode json")
-        return HttpResponse("Hello, world. You're at the polls index.")
+        return HttpResponse("Hello, world. You're at the video_player index.")
 
     logger.info("Input: %s", pprint.pformat(input))
     if 'arguments' not in input:

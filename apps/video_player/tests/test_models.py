@@ -3,8 +3,8 @@ from unittest.mock import patch
 
 from django.test import TestCase
 
-from polls.models import Video, VideoFolder
-from polls.exceptions import AliasesContainSpaces, InvalidPath
+from apps.video_player.models import Video, VideoFolder
+from apps.video_player.exceptions import AliasesContainSpaces, InvalidPath
 from .factories import VideoFolderFactory
 
 
@@ -15,13 +15,13 @@ class TestVideoFolderModel(TestCase):
                 VideoFolderFactory(aliases='test testy')
 
     def test_raises_if_invalid_path(self):
-        with patch('polls.models.os.path.isdir', return_value=False):
+        with patch('apps.video_player.models.os.path.isdir', return_value=False):
             with self.assertRaises(InvalidPath):
                 VideoFolderFactory()
 
     def test_creates_videos(self):
-        with patch('polls.models.os.path.isdir', return_value=True):
-            with patch('polls.models.os.listdir', return_value=['test.avi', 'readme.txt', 'test2.mp4']):
+        with patch('apps.video_player.models.os.path.isdir', return_value=True):
+            with patch('apps.video_player.models.os.listdir', return_value=['test.avi', 'readme.txt', 'test2.mp4']):
                 folder = VideoFolderFactory()
                 videos = Video.objects.filter(folder=folder)
                 assert videos.count() == 2
@@ -29,8 +29,8 @@ class TestVideoFolderModel(TestCase):
                 assert set(v.file_name for v in videos) == set(['test.avi', 'test2.mp4'])
 
     def test_gets_next_video(self):
-        with patch('polls.models.os.path.isdir', return_value=True):
-            with patch('polls.models.os.listdir', return_value=['video.avi']):
+        with patch('apps.video_player.models.os.path.isdir', return_value=True):
+            with patch('apps.video_player.models.os.listdir', return_value=['video.avi']):
                 correctFolder = VideoFolderFactory(aliases='hello,other', priority=50)
                 VideoFolderFactory(aliases='hello,word', priority=20)
                 VideoFolderFactory(aliases='nope', priority=100)
@@ -48,11 +48,11 @@ class TestVideoModel(TestCase):
         assert not Video.is_video_file("testavi")
 
     def test_play_sets_datetime(self):
-        with patch('polls.models.os.path.isdir', return_value=True):
-            with patch('polls.models.os.listdir', return_value=['video.avi']):
+        with patch('apps.video_player.models.os.path.isdir', return_value=True):
+            with patch('apps.video_player.models.os.listdir', return_value=['video.avi']):
                 VideoFolderFactory()
         video = Video.objects.get()
         assert not video.last_played
-        with patch('polls.models.Messenger'):
+        with patch('apps.video_player.models.Messenger'):
             video.play()
         assert video.last_played
