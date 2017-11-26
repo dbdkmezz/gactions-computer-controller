@@ -22,13 +22,12 @@ class VideoFolder(models.Model):
             super(VideoFolder, self).save(*args, **kwargs)
             return
 
-        print(self.aliases)
         if ' ' in self.aliases:
-            raise AliasesContainSpaces()
+            raise AliasesContainSpaces("Aliases should be a comma separated list, with no spaces.")
 
         videos = list(self.paths_of_videos_in_folder())
         if not videos:
-            raise FolderContainsNoVideos
+            raise FolderContainsNoVideos("{} contains no video files".format(self.path))
 
         # need to save it now so it has an id, then we can add the videos
         super(VideoFolder, self).save(*args, **kwargs)
@@ -46,7 +45,8 @@ class VideoFolder(models.Model):
 
     @staticmethod
     def get_next_video_matching_query(query):
-        for folder in VideoFolder.objects.all().order_by('priority'):
+        for folder in VideoFolder.objects.all().order_by('-priority'):
+            print(folder)
             for name in folder.aliases.split(','):
                 if name.lower() in query.lower():
                     video = Video.objects.filter(folder__id=folder.id, last_played=None).order_by('file_name').first()
@@ -54,7 +54,7 @@ class VideoFolder(models.Model):
 
     def paths_of_videos_in_folder(self):
         if not os.path.isdir(self.path):
-            raise InvalidPath
+            raise InvalidPath("{} is not a valid path".format(self.path))
         for f in os.listdir(self.path):
             if Video.is_video_file(f):
                 yield f

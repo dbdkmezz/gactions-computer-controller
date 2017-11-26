@@ -3,8 +3,8 @@ from unittest.mock import patch
 
 from django.test import TestCase
 
-from polls.models import Video  # , VideoFolder
-from polls.exceptions import AliasesContainSpaces, FolderContainsNoVideos, InvalidPath
+from polls.models import Video, VideoFolder
+from polls.exceptions import AliasesContainSpaces, InvalidPath
 from .factories import VideoFolderFactory
 
 
@@ -28,6 +28,16 @@ class TestVideoFolderModel(TestCase):
                 assert videos.filter(last_played=None).count() == 2
                 assert set(v.file_name for v in videos) == set(['test.avi', 'test2.mp4'])
 
+    def test_gets_next_video(self):
+        with patch('polls.models.os.path.isdir', return_value=True):
+            with patch('polls.models.os.listdir', return_value=['video.avi']):
+                correctFolder = VideoFolderFactory(aliases='hello,other', priority=50)
+                VideoFolderFactory(aliases='hello,word', priority=20)
+                VideoFolderFactory(aliases='nope', priority=100)
+
+        result = VideoFolder.get_next_video_matching_query('hello')
+        assert result.folder == correctFolder
+
 
 class TestVideoModel(TestCase):
     def test_is_video_file(self):
@@ -36,3 +46,13 @@ class TestVideoModel(TestCase):
         assert Video.is_video_file("test.avi")
         assert not Video.is_video_file("test.txt")
         assert not Video.is_video_file("testavi")
+
+    def test_play_sets_datetime(self):
+        with patch('polls.models.os.path.isdir', return_value=True):
+            with patch('polls.models.os.listdir', return_value=['video.avi']):
+                VideoFolderFactory()
+        video = Video.objects.get()
+        assert not video.last_played
+        with patch('polls.models.Messenger'):
+            video.play()
+        assert video.last_played
