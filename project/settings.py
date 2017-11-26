@@ -11,6 +11,18 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import environ
+
+
+root = environ.Path(__file__) - 2
+
+env = environ.Env(
+    HOST_IP=(str, None),
+    SECRET_KEY=(str,None),
+)
+env_file = root('project', 'local.env')
+env.read_env(env_file=env_file)
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # BASE_DIR = "/home/paul/gactions-computer-controller"
@@ -21,14 +33,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '_^2rpgo^z=1^&ys28izp*3)$y-=m(@pd)b@3a&g&o*z)yg=_%d'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = [
     'localhost',
-    '82.69.27.104',
+    env('HOST_IP'),
 ]
 
 
