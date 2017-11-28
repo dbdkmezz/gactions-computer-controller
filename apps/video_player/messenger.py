@@ -20,6 +20,11 @@ class Messenger(object):
         cls._get_connection().send(['video', path])
 
     @classmethod
+    def play_pause_video(cls):
+        logger.debug("Sending play-pause request")
+        cls._get_connection().send(['video-pause'])
+
+    @classmethod
     def open_website(cls, url):
         logger.debug("Sending website request, url: %s", url)
         cls._get_connection().send(['website', url])

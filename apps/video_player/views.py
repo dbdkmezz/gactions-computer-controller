@@ -28,6 +28,9 @@ def index(request):
         if video:
             video.play()
             return googleResponse("OK! Playing {}".format(video.name))
+        if any(s in query for s in ('play', 'pause', 'resume')):
+            Messenger.play_pause_video()
+            return googleResponse("On it!")
         if 'blue' in query:
             Messenger.open_website('https://www.bbc.co.uk/iplayer/episodes/p04tjbtx')
             return googleResponse("OK! Opening Blue Planet, on iPlayer.")
