@@ -1,3 +1,6 @@
 [submodule "libs/google_actions"]
 	path = libs/google_actions
 	url = git@github.com:dbdkmezz/actions-on-google-python.git
+[submodule "apps/video_player"]
+	path = apps/video_player
+	url = git@github.com:dbdkmezz/gactions-video-player.git
