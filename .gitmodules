@@ -1,0 +1,3 @@
+[submodule "libs/google_actions"]
+	path = libs/google_actions
+	url = git@github.com:dbdkmezz/actions-on-google-python.git
