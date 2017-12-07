@@ -106,7 +106,7 @@ ENV/
 # django
 db.sqlite3
 static
-project/local.env
+project/secrets.json
 
 # google actions
 google/creds.data

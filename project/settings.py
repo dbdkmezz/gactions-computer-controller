@@ -10,37 +10,39 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import os
-import environ
+import json
+from unipath import Path
+
+from django.core.exceptions import ImproperlyConfigured
 
 
-root = environ.Path(__file__) - 2
-
-env = environ.Env(
-    HOST_IP=(str, None),
-    SECRET_KEY=(str,None),
-)
-env_file = root('project', 'local.env')
-env.read_env(env_file=env_file)
+BASE_DIR = Path(__file__).ancestor(2)
+SETTINGS_DIR = Path(__file__).ancestor(1)
 
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-# BASE_DIR = "/home/paul/gactions-computer-controller"
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+secrets_json = SETTINGS_DIR.child('secrets.json')
+with open(secrets_json) as f:
+    secrets = json.loads(f.read())
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
+def get_secret(setting):
+    try:
+        return secrets[setting]
+    except KeyError:
+        raise ImproperlyConfigured(
+            "Set the {} variable in {}".format(setting, secrets_json))
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = get_secret('SECRET_KEY')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = [
     'localhost',
-    env('HOST_IP'),
+    get_secret('HOST_IP'),
 ]
 
 
@@ -48,6 +50,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'apps.video_player.apps.VideoPlayerConfig',
+    # 'apps.word_finding.apps.WordFindingConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -93,7 +96,7 @@ WSGI_APPLICATION = 'project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': BASE_DIR.child('db.sqlite3'),
     }
 }
 
@@ -155,4 +158,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATIC_ROOT = BASE_DIR.child('static')
