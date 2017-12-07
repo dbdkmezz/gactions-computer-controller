@@ -11,4 +11,4 @@ This is a django app to power a basic home media PC. It can response to requests
         ./gactions test --action_package google/action.json --project YOUR_TEST_PROJECT
 
 ### Run the listener
-The listener should be run as your normal user, which will have access to your X server, in order to run applications like vlc. This is needed so you don't have to grant `www-data` any additional permissions. To run the listener just run the bash script `listener/listener.bash`.
+The listener should be run as your normal user, which will have access to your X server, in order to run applications like vlc. This is needed so you don't have to grant `www-data` any additional permissions. To run the listener just run the bash script `apps/video_player/listener/listener.bash`.
