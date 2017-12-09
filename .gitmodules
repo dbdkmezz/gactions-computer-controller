@@ -4,3 +4,6 @@
 [submodule "apps/video_player"]
 	path = apps/video_player
 	url = git@github.com:dbdkmezz/gactions-video-player.git
+[submodule "apps/word_finding"]
+	path = apps/word_finding
+	url = git@github.com:dbdkmezz/gactions-word-finding.git

@@ -50,7 +50,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'apps.video_player.apps.VideoPlayerConfig',
-    # 'apps.word_finding.apps.WordFindingConfig',
+    'apps.word_finding.apps.WordFindingConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -132,7 +132,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'django': {
+        '': {
             'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,

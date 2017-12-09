@@ -17,6 +17,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^video_player/', include('apps.video_player.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^video_player/', include('apps.video_player.urls')),
+    url(r'^word_finding/', include('apps.word_finding.urls')),
 ]
