@@ -16,7 +16,7 @@ from unipath import Path
 from django.core.exceptions import ImproperlyConfigured
 
 
-BASE_DIR = Path(__file__).ancestor(2)
+BASE_DIR = Path(__file__).ancestor(3)
 SETTINGS_DIR = Path(__file__).ancestor(1)
 
 
