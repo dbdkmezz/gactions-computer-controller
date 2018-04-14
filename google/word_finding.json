@@ -1,0 +1,19 @@
+{
+  "actions": [
+    {
+      "name": "MAIN",
+      "intent": {
+        "name": "actions.intent.MAIN"
+      },
+      "fulfillment": {
+        "conversationName": "word-finding-practice"
+      }
+    }
+  ],
+  "conversations": {
+    "word-finding-practice": {
+      "name": "word-finding-practice",
+      "url": "https://URL/word_finding/"
+    }
+  }
+}
